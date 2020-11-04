@@ -14,8 +14,10 @@ db_details = {
     "port": os.getenv("DB_PORT")
 }
 
+credentials = f"{db_details.get('user')}:{db_details.get('password')}"
+host = f"{db_details.get('host')}:{db_details.get('port')}"
 engine = create_engine(
-    f"postgres+psycopg2://{db_details.get('user')}:{db_details.get('password')}@{db_details.get('host')}:{db_details.get('port')}/{db_details.get('name')}",
+    f"postgres+psycopg2://{credentials}@{host}/{db_details.get('name')}",
     convert_unicode=True
 )
 db_session = scoped_session(
@@ -29,13 +31,12 @@ db_session = scoped_session(
 Base = declarative_base(cls=(JsonSerializableBase,))
 Base.query = db_session.query_property()
 
+
 def init_db():
     # import all modules here that might define models so that
     # they will be registered properly on the metadata.  Otherwise
     # you will have to import them first before calling init_db()
-    import app.models
-
-
+    import app.models  # noqa: F401
 
     Base.metadata.create_all(bind=engine)
 

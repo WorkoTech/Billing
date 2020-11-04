@@ -1,19 +1,15 @@
 import stripe
 import os
 import jwt
-from flask import Flask, jsonify, request, Response, redirect
+from flask import Flask, jsonify, request, Response
 from flask_jsontools import DynamicJSONEncoder
-from sqlalchemy.orm import joinedload
 
 from app.database import db_session, init_db
 from app.invalid_usage import InvalidUsage
 from app.validation import validate_checkout_session
 from app.services.stripe import (
     create_stripe_session,
-    complete_stripe_session,
-    stripe_invoice_paid,
-    stripe_invoice_failed,
-    handle_stripe_webhook,
+    handle_stripe_webhook
 )
 from app.services.usage import (
     get_workspace_usage_and_limits,
@@ -22,7 +18,7 @@ from app.services.usage import (
 from app.services.log import (
     handle_billing_event
 )
-from app.models import Offer, Subscription, OfferItem
+from app.models import Offer, Subscription
 
 
 app = Flask(__name__)
@@ -39,6 +35,7 @@ stripe_portal_return_url = os.getenv('STRIPE_PORTAL_RETURN_URL')
 @app.teardown_appcontext
 def shutdown_session(exception=None):
     db_session.remove()
+
 
 @app.errorhandler(InvalidUsage)
 def handle_invalid_usage(error):
@@ -66,7 +63,7 @@ def create_checkout_session():
     if not encoded_jwt:
         return Response("No authorization header found", status=401)
 
-    _, raw_jwt = encoded_jwt.split() # Remove "Bearer"
+    _, raw_jwt = encoded_jwt.split()  # Remove "Bearer"
     decoded = jwt.decode(raw_jwt, algorithms=['HS256'], verify=False)
 
     price_id = request.json.get('price')
@@ -87,7 +84,7 @@ def stripe_portal():
     if not encoded_jwt:
         return Response("No authorization header found", status=401)
 
-    _, raw_jwt = encoded_jwt.split() # Remove "Bearer"
+    _, raw_jwt = encoded_jwt.split()  # Remove "Bearer"
     decoded = jwt.decode(raw_jwt, algorithms=['HS256'], verify=False)
 
     subscription = Subscription.query.filter(Subscription.user_id == decoded["userId"]).first()
@@ -112,7 +109,7 @@ def subscription():
     if not encoded_jwt:
         return Response("No authorization header found", status=401)
 
-    _, raw_jwt = encoded_jwt.split() # Remove "Bearer"
+    _, raw_jwt = encoded_jwt.split()  # Remove "Bearer"
     decoded = jwt.decode(raw_jwt, algorithms=['HS256'], verify=False)
 
     subscription = Subscription.query.filter(Subscription.user_id == decoded["userId"]).first()
@@ -127,7 +124,7 @@ def log() -> str:
     if not encoded_jwt:
         return Response("No authorization header found", status=401)
 
-    _, raw_jwt = encoded_jwt.split() # Remove "Bearer"
+    _, raw_jwt = encoded_jwt.split()  # Remove "Bearer"
     decoded = jwt.decode(raw_jwt, algorithms=['HS256'], verify=False)
 
     print("GOT BILLING EVENT ", request.json)
@@ -163,7 +160,7 @@ def user_usage():
         return Response("No authorization header found", status=401)
 
     print("JWT : " + str(encoded_jwt))
-    _, raw_jwt = encoded_jwt.split() # Remove "Bearer"
+    _, raw_jwt = encoded_jwt.split()  # Remove "Bearer"
     decoded = jwt.decode(raw_jwt, algorithms=['HS256'], verify=False)
     user_id = decoded["userId"]
 
@@ -184,5 +181,3 @@ def user_usage():
 if __name__ == "__main__":
     app.run(host='0.0.0.0', port=int(os.getenv("PORT")))
     init_db()
-
-

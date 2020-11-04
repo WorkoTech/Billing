@@ -64,7 +64,7 @@ def workspace_deleted_handler(event):
     generic_user_event_handler(event, -1)
 
     workspace_usage = WorkspaceUsage.query.filter(
-        WorkspaceUsage.workspace_id==event.workspace_id,
+        WorkspaceUsage.workspace_id == event.workspace_id,
     ).first()
     db_session.delete(workspace_usage)
     db_session.commit()
@@ -119,7 +119,7 @@ def generic_user_event_handler(event, add):
 
 def generic_workspace_event_handler(event, field, add):
     workspace_usage = WorkspaceUsage.query.filter(
-        WorkspaceUsage.workspace_id==event.workspace_id,
+        WorkspaceUsage.workspace_id == event.workspace_id,
     ).first()
 
     if not workspace_usage:

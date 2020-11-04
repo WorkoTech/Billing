@@ -8,8 +8,7 @@ from sqlalchemy import (
     Enum,
     ForeignKey,
     Float,
-    Boolean,
-    ARRAY
+    Boolean
 )
 from sqlalchemy.orm import relationship
 from .database import Base
@@ -153,92 +152,3 @@ class WorkspaceUsage(Base):
             self.document_count,
             self.storage_size_count
         )
-# Item to control :
-#   - Workspace created
-#   - Document per workspace
-#   - File storage size per workspace
-
-
-# We need at the end:
-#
-# The user offer items with their limits
-# The user usage of each items
-
-# Usage view return exemple for an user
-#
-# {
-#     offer : {
-#         items: [
-#             { resource: "document", limit: x, description: "" },
-#             { resource: "storage", limit: y, description: "" },
-#             { resource: "workspace", limit: z, description: "" }
-#         ]
-#     }
-#     usage : {
-#         workspaces: [
-#             { workspace_id: w, document: x, storage: y }
-#         ],
-#         workspaces_created: z
-#     }
-# }
-
-# Workspace Usage must be determined by the creator offer
-
-# How to build it :
-# Retrieve Subscription from user_id
-# Get offer_id from it
-# Get offer_items from offer_id
-# Get UserWorkspaceDocumentUsage, UserWorkspaceStorageUsage, UserWorkspaceCreatedUsage from user_id
-
-# Todo :
-# - add offer_id in subscription
-
-# Offer item
-#
-# id
-# offer_id
-# resource
-# limit
-# description
-
-# WorkspaceUsage
-#
-# id
-# workspace_id
-# creator_user_id
-# document_count
-# storage_size_count
-
-# UserUsage
-#
-# id
-# user_id
-# workspace_count
-
-
-# Usage :
-# Vérifier si un user peut créer un workspace
-#    |-> Récupérer l'Offre et ses items (et leurs limites) + son UserUsage
-# Vérifier si un user peut créer un document dans un workspace
-#    |-> Récuprer le WorkspaceUsage, l'Offre du creator_user_id et ses items
-# Vérifier si un user peut créer un fichier dans un workspace
-#    |-> Récuprer le WorkspaceUsage, l'Offre du creator_user_id et ses items
-
-
-# Events that been logged
-#
-# {
-#     type: [
-#         'WORKSPACE_DOCUMENT_CREATED',
-#         'WORKSPACE_DOCUMENT_DELETED',
-#         'WORKSPACE_STORAGE_CREATED',
-#         'WORKSPACE_STORAGE_DELETED',
-#         'WORKSPACE_CREATED',
-#         'WORKSPACE_DELETED',
-#     ],
-#     workspace_id: x, # only needed for DOCUMENT and STORAGE events
-
-# }
-#
-#
-#

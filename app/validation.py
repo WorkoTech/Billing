@@ -28,5 +28,3 @@ def validate_checkout_session(request):
         return None
     else:
         return inputs.errors
-
-

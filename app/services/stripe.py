@@ -162,8 +162,8 @@ def find_customer_signup(subscription_id):
 def sign_up_customer(user_id, offer_id, customer_id, subscription_id):
     subscription = Subscription(
         user_id=user_id,
-        stripe_subscription_id = subscription_id,
+        stripe_subscription_id=subscription_id,
         stripe_customer_id=customer_id
     )
-    subscription.offer_id=offer_id
+    subscription.offer_id = offer_id
     return subscription
